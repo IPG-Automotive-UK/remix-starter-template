@@ -1,3 +1,4 @@
+import * as React from "react";
 import {
   Links,
   LiveReload,
@@ -5,27 +6,172 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useCatch,
+  useLocation,
 } from "remix";
+import ThemeConfig from "~/themes";
+import Layout from "~/layout";
 
-export function meta() {
-  return { title: "New Remix App" };
-}
+/**
+ * The `links` export is a function that returns an array of objects that map to
+ * the attributes for an HTML `<link>` element. These will load `<link>` tags on
+ * every route in the app, but individual routes can include their own links
+ * that are automatically unloaded when a user navigates away from the route.
+ *
+ * https://remix.run/api/app#links
+ */
+export const links = () => [
+  {
+    rel: "stylesheet",
+    href: "https://fonts.googleapis.com/icon?family=Material+Icons",
+  },
+];
 
-export default function App() {
+/**
+ * Provides an alert for screen reader users when the route changes.
+ */
+const RouteChangeAnnouncement = React.memo(() => {
+  const [hydrated, setHydrated] = React.useState(false);
+  const [innerHtml, setInnerHtml] = React.useState("");
+  const location = useLocation();
+
+  React.useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  const firstRenderRef = React.useRef(true);
+  React.useEffect(() => {
+    // Skip the first render because we don't want an announcement on the
+    // initial page load.
+    if (firstRenderRef.current) {
+      firstRenderRef.current = false;
+      return;
+    }
+
+    const pageTitle = location.pathname === "/" ? "Home page" : document.title;
+    setInnerHtml(`Navigated to ${pageTitle}`);
+  }, [location.pathname]);
+
+  // Render nothing on the server. The live region provides no value unless
+  // scripts are loaded and the browser takes over normal routing.
+  if (!hydrated) {
+    return null;
+  }
+
   return (
-    <html lang="en">
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        <Outlet />
-        <ScrollRestoration />
-        <Scripts />
-        {process.env.NODE_ENV === "development" && <LiveReload />}
-      </body>
-    </html>
+    <div
+      aria-live="assertive"
+      aria-atomic
+      id="route-change-region"
+      style={{
+        border: "0",
+        clipPath: "inset(100%)",
+        clip: "rect(0 0 0 0)",
+        height: "1px",
+        margin: "-1px",
+        overflow: "hidden",
+        padding: "0",
+        position: "absolute",
+        width: "1px",
+        whiteSpace: "nowrap",
+        wordWrap: "normal",
+      }}
+    >
+      {innerHtml}
+    </div>
   );
-}
+});
+
+const defaultProps = { title: "Remix Run" };
+const Document = ({ children, title }) => (
+  <html lang="en">
+    <head>
+      <meta charSet="utf-8" />
+      <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+      {title ? <title>{title}</title> : null}
+      <Meta />
+      <Links />
+    </head>
+    <body>
+      {children}
+      <RouteChangeAnnouncement />
+      <ScrollRestoration />
+      <Scripts />
+      {process.env.NODE_ENV === "development" && <LiveReload />}
+    </body>
+  </html>
+);
+
+Document.defaultProps = defaultProps;
+
+/**
+ * The root module's default export is a component that renders the current
+ * route via the `<Outlet />` component. Think of this as the global layout
+ * component for your app.
+ */
+const App = () => (
+  <Document>
+    <ThemeConfig>
+      <Layout>
+        <Outlet />
+      </Layout>
+    </ThemeConfig>
+  </Document>
+);
+
+export const CatchBoundary = () => {
+  const caught = useCatch();
+
+  let message;
+  switch (caught.status) {
+    case 401:
+      message = (
+        <p>
+          Oops! Looks like you tried to visit a page that you do not have access
+          to.
+        </p>
+      );
+      break;
+    case 404:
+      message = (
+        <p>Oops! Looks like you tried to visit a page that does not exist.</p>
+      );
+      break;
+
+    default:
+      throw new Error(caught.data || caught.statusText);
+  }
+
+  return (
+    <Document title={`${caught.status} ${caught.statusText}`}>
+      <Layout>
+        <h1>
+          {caught.status}:{caught.statusText}
+        </h1>
+        {message}
+      </Layout>
+    </Document>
+  );
+};
+
+export const ErrorBoundary = ({ error }) => {
+  console.error(error);
+  return (
+    <Document title="Error!">
+      <Layout>
+        <div>
+          <h1>There was an error</h1>
+          <p>{error.message}</p>
+          <hr />
+          <p>
+            Hey, developer, you should replace this with what you want your
+            users to see.
+          </p>
+        </div>
+      </Layout>
+    </Document>
+  );
+};
+
+export default App;
