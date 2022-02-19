@@ -30,7 +30,7 @@ export default function Login() {
           Remix Starter Template
         </Typography>
         <Box mt={2}>
-          <LoginForm />
+          <LoginForm onLogin={() => window.alert("This is just a demo")} />
         </Box>
       </Box>
       <Box display="flex" justifyContent="space-between">
