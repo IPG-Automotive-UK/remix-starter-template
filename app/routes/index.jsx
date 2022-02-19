@@ -10,9 +10,13 @@ import {
 import LockIcon from "@mui/icons-material/Lock";
 import { Copyright, LoginForm } from "@ipguk/react-ui";
 
-/**
- * Login page
- */
+export const meta = () => {
+  return {
+    title: "Remix Starter Template",
+    description: "Example template for Remix",
+  };
+};
+
 export default function Login() {
   return (
     <Container component="main" maxWidth="xs">

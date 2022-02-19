@@ -2,8 +2,6 @@
 
 This repository is a template for creating a remix app using MUI & IPG UK React UI component libraries.
 
-It's configured to use Remix App Server and JavaScript.
-
 ## Getting started
 
 Clone the repository and install dependencies.

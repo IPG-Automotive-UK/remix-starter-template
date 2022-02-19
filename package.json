@@ -1,8 +1,7 @@
 {
+  "name": "remix-with-typescript",
+  "version": "5.0.0",
   "private": true,
-  "name": "remix-mui-template",
-  "description": "",
-  "license": "",
   "scripts": {
     "build": "remix build",
     "dev": "remix dev",
@@ -10,22 +9,23 @@
     "start": "remix-serve build"
   },
   "dependencies": {
-    "@emotion/cache": "^11.7.1",
-    "@emotion/react": "^11.7.1",
-    "@emotion/server": "^11.4.0",
-    "@emotion/styled": "^11.6.0",
+    "@emotion/cache": "latest",
+    "@emotion/react": "latest",
+    "@emotion/server": "latest",
+    "@emotion/styled": "latest",
     "@ipguk/react-ui": "^2.10.0",
-    "@mui/icons-material": "^5.3.1",
-    "@mui/material": "^5.4.0",
-    "@mui/styles": "^5.3.0",
-    "@remix-run/react": "^1.1.3",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "remix": "^1.1.3",
-    "@remix-run/serve": "^1.1.3"
+    "@mui/material": "latest",
+    "@remix-run/react": "latest",
+    "@remix-run/serve": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "remix": "latest"
   },
   "devDependencies": {
-    "@remix-run/dev": "^1.1.3"
+    "@remix-run/dev": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "latest"
   },
   "engines": {
     "node": ">=14"
